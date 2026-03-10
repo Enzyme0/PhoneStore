@@ -1,5 +1,3 @@
-from Phone import Phone
-
 class GroceryStore:
     def __init__(self, name):
         self.name = name
