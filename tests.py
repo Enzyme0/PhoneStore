@@ -1,4 +1,6 @@
 import unittest
+import os
+import tempfile
 from Phone import Phone
 from Store import Store
 
@@ -74,6 +76,23 @@ class TestStore(unittest.TestCase):
 
     def test_find_cheapest_empty(self):
         self.assertIsNone(self.store.find_cheapest())
+
+    def test_save_and_load_json_round_trip(self):
+        self.store.add_phone(self.iphone)
+        self.store.add_phone(self.pixel)
+
+        fd, file_path = tempfile.mkstemp(suffix=".json")
+        os.close(fd)
+        try:
+            self.store.save_to_json(file_path)
+            loaded_store = Store.load_from_json(file_path)
+        finally:
+            os.remove(fd)
+
+        self.assertEqual(loaded_store.name, self.store.name)
+        self.assertEqual(len(loaded_store.inventory), 2)
+        self.assertEqual(loaded_store.inventory[0].model, "iPhone 14")
+        self.assertEqual(loaded_store.inventory[1].model, "Pixel 8")
 
 
 if __name__ == "__main__":
